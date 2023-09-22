@@ -8,6 +8,7 @@ public class SpringSecurityJpaMySqlApplication {
 
 	public static void main(String[] args) {
 		SpringApplication.run(SpringSecurityJpaMySqlApplication.class, args);
+		System.out.println("Spring Security JPA MySQL");
 	}
 
 }
