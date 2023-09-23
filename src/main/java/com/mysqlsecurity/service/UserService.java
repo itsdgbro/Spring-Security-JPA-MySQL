@@ -1,16 +1,14 @@
 package com.mysqlsecurity.service;
 
-import com.mysqlsecurity.model.User;
+import com.mysqlsecurity.model.CustomUserDetails;
 import com.mysqlsecurity.repository.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.security.core.GrantedAuthority;
-import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
 
-import java.util.Set;
+import java.util.Optional;
 
 @Service
 public class UserService implements UserDetailsService {
@@ -20,10 +18,8 @@ public class UserService implements UserDetailsService {
 
     @Override
     public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
-        User user = userRepository.findByUsername(username).orElseThrow(() ->new UsernameNotFoundException("User not found"));
-        SimpleGrantedAuthority authority = new SimpleGrantedAuthority(user.getRole());
-        System.out.println(user + " " + authority.getAuthority());
-
-        return new org.springframework.security.core.userdetails.User(username, user.getPassword(), Set.of(authority));
+       return userRepository.findByUsername(username)
+               .map(CustomUserDetails::new)
+               .orElseThrow(() -> new UsernameNotFoundException("Invalid Credentials"));
     }
 }
