@@ -1,25 +1,23 @@
 package com.mysqlsecurity.service;
 
-import com.mysqlsecurity.model.CustomUserDetails;
+import com.mysqlsecurity.model.User;
 import com.mysqlsecurity.repository.UserRepository;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.security.core.userdetails.UserDetails;
-import org.springframework.security.core.userdetails.UserDetailsService;
-import org.springframework.security.core.userdetails.UsernameNotFoundException;
+import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
-import java.util.Optional;
+import java.util.ArrayList;
+import java.util.List;
 
 @Service
-public class UserService implements UserDetailsService {
+@RequiredArgsConstructor
+public class UserService {
 
-    @Autowired
-    private UserRepository userRepository;
+    private final UserRepository userRepository;
 
-    @Override
-    public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
-       return userRepository.findByUsername(username)
-               .map(CustomUserDetails::new)
-               .orElseThrow(() -> new UsernameNotFoundException("Invalid Credentials"));
+    public List<User> getUsers() {
+        Iterable<User> usersIterable = userRepository.findAll();
+        List<User> usersList = new ArrayList<>();
+        usersIterable.forEach(usersList::add);
+        return usersList;
     }
 }

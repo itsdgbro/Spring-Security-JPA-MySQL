@@ -2,6 +2,7 @@ package com.mysqlsecurity.controller;
 
 import com.mysqlsecurity.model.User;
 import com.mysqlsecurity.service.UserService;
+import com.mysqlsecurity.service.UserServiceImpl;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -9,24 +10,28 @@ import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.userdetails.UserDetails;
-import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.web.bind.annotation.*;
 
 import java.security.Principal;
+import java.util.List;
 import java.util.Map;
+import java.util.stream.Collectors;
 
 @RestController
 public class UserController {
 
     @Autowired
     AuthenticationManager authenticationManager;
+
     @Autowired
     private UserService userService;
+    @Autowired
+    private UserServiceImpl userServiceImpl;
 
-    @GetMapping("/")
-    public String home(){
-        return "<h1>Welcome home</h1>";
+    @GetMapping(value = "/", produces = "application/json")
+    public List<User> home(){
+        return userService.getUsers().stream().peek(user -> user.setPassword("****")).collect(Collectors.toList());
     }
 
     @GetMapping("/user")
@@ -46,7 +51,7 @@ public class UserController {
             String password = credentials.get("Password");
 
             //  Load user details using UserDetailsService
-            UserDetails userDetails = userService.loadUserByUsername(username);
+            UserDetails userDetails = userServiceImpl.loadUserByUsername(username);
 
             // generate token
             UsernamePasswordAuthenticationToken authenticationToken = new UsernamePasswordAuthenticationToken(userDetails, password);
